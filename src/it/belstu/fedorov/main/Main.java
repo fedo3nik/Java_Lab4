@@ -3,29 +3,26 @@ package it.belstu.fedorov.main;
 import it.belstu.fedorov.companies.OutsourceCompany;
 import it.belstu.fedorov.director.Director;
 import it.belstu.fedorov.employes.*;
-import org.apache.log4j.Logger;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.xml.DOMConfigurator;
+import com.google.gson.Gson;
+import org.xml.sax.SAXException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Main {
-
-    static {
-        new DOMConfigurator().doConfigure("log/log4j.xml",
-                LogManager.getLoggerRepository());
-    }
-
-    private static final Logger LOG = Logger.getLogger(Main.class);
 
     public static void main(String[] args)
     {
      try
      {
-         LOG.info("Start program");
          String company1_name = "ITechArt";
          String company1_country_customer = "USA";
          int company1_count_of_customers = 4;
          OutsourceCompany ITechArt = new OutsourceCompany(company1_country_customer, company1_count_of_customers, company1_name);
-         LOG.info("Create a new Outsource company");
          Director ITechArtDirector = new Director("Vyacheslav Romanenko", true, ITechArt);
          Architect ITechArtArchitect = new Architect(true, "Web-site", "Oleg Rozhkov", 32, 14);
          TeamLeader ITechArtTeamLead = new TeamLeader(TeamLeader.EnglishLevel.C2, "Aleksey Rovniy", 26, 6);
@@ -41,17 +38,38 @@ public class Main {
          System.out.println(ITechArtDirector.CountEmployee());
          ITechArtDirector.FireEmployee(ITechArtProg2);
          System.out.println(ITechArtDirector.CountEmployee());
-         ITechArtDirector.FireEmployee(ITechArtProg2);
-         LOG.info("End program");
+         //ITechArtDirector.FireEmployee(ITechArtProg2);
+
+         //Lab 5[[[[[[[[[[[]]]]]]]]]]]]
+
+         SAXParserFactory factory = SAXParserFactory.newInstance();
+         SAXParser parser = factory.newSAXParser();
+
+         XMLHandler saxParser = new XMLHandler();
+
+         saxParser.valid("files/info.xsd.xml", "files/info.xsd");
+         parser.parse(new File("files/info.xsd.xml"), saxParser);
+
+         System.out.println(saxParser.getEmployee().toString() + '\n');
+         Gson gson = new Gson();
+         try (FileWriter writer = new FileWriter("files/info.json")) {
+             gson.toJson(ITechArtProg1, writer);
+         }
+
+         Programmer someProg = gson.fromJson(new FileReader("files/info.json"), ITechArtProg1.getClass());
+         System.out.println(someProg.toString());
+
+         ITechArtDirector.AddEmployee(someProg);
+         System.out.println(ITechArtDirector.CountEmployee());
+
      }
      catch (Exception ex)
      {
          System.out.println(ex.getMessage());
-         LOG.info("Throw exception");
      }
 
      finally {
-         LOG.info("End program");
+         System.out.println("The End!");
      }
     }
 }

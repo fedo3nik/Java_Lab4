@@ -18,4 +18,16 @@ public class Programmer extends AbstractEmployee {
         this._age = age;
         this._experience = experience;
     }
+
+    @Override
+    public String toString()
+    {
+        return  "Programmer{" +
+                "name='" + _name + '\'' +
+                ", age='" + _age + '\'' +
+                ", experience='" + _experience +
+                '}';
+    }
+
+    public Programmer(){}
 }
